@@ -96,6 +96,22 @@ end
 run app
 ```
 
+## Options
+
+Here a list of options which rack-delay can understand.  
+
+
+* **:min** / **:max**  
+  Specifies range in msec of random delay. When :min == :max delay will be fixed
+
+* **:delay**  
+  Another way to customize delay generation. Value returned by block can be a single number or 2 item array.  
+  When a number, then the request will be slowdown exactly by that number msec.  
+  If returns 2 items array (eg. [min, max]), then will be used to build range.
+
+* **:if** / **:unless**  
+  Used to control activation of rack-delay.  
+
 ## Copyright
 
 Copyright (c) 2013 Vincenzo Farruggia.
