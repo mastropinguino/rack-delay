@@ -22,6 +22,11 @@ module Rack
     end
 
     def peek_delay(min, max)
+      if min > max
+        tmp = max
+        max = min
+        min = tmp
+      end
       return min / 1000.0 if min == max
       (min + rand(max - min)) / 1000.0
     end
@@ -36,24 +41,26 @@ module Rack
 
     def call(env)
       request = Rack::Request.new(env)
-      skip_delay = false
+      should_delay = true
       
       
-      skip_delay = !!_call_block(options[:if], request) if options[:if]
-      skip_delay = !skip_delay if options[:negate]
+      should_delay = !!_call_block(options[:if], request) if options[:if]
+      should_delay = !should_delay if options[:negate]
 
       header_delay = 'none'
       
-      unless skip_delay
+      if should_delay
 
         min_delay = options[:min]
         max_delay = options[:max]
 
         if options[:delay]
           ret = _call_block(options[:delay], request)
-          ret = [ret] unless ret.kind_of?(Array)
-          min_delay = ret.first
-          max_delay = ret.last
+          unless ret.nil?
+            ret = [ret] unless ret.kind_of?(Array)
+            min_delay = ret.first
+            max_delay = ret.last
+          end
         end
 
         delay = peek_delay(min_delay, max_delay)
